@@ -2,7 +2,8 @@ const button = document.querySelector('#butonek');
 const input: HTMLInputElement = document.querySelector(
   '#location'
 ) as HTMLInputElement;
-const div = document.querySelector('#weather_container');
+const weatherContainer = document.querySelector('#weather_container');
+const locationContainer = document.querySelector('#location_list');
 
 const baseUrl = 'https://api.openweathermap.org/data/2.5';
 const appId = '&appid=81e564bdda8adddbc2d805694d19cdac';
@@ -15,59 +16,32 @@ button?.addEventListener('click', async () => {
   if (location == null || location == '') {
     alert('Pole nie może być puste');
   } else {
-    const weatherData = await getWeatherData(location);
-    if (weatherData.cod == '404') {
-      alert(`Nie znaleziono prognozy dla ${location}`);
-    } else {
-      const feels_like_span = document.createElement('span');
-      feels_like_span.innerHTML = weatherData.main.feels_like;
-      div?.append(feels_like_span);
+    const locationData = await searchLocation(location);
+    console.log('list', locationData);
+    locationData.list.forEach((element: any) => {
+      console.log(element);
+      const locationElement = document.createElement('div');
+      const locationButton = document.createElement('button');
+      locationButton.innerHTML = element.name;
+      locationContainer?.append(locationButton);
+      locationButton.addEventListener('click', async () => {
+        const weatherData = await getWeatherData(location);
+        if (weatherData.cod == '404') {
+          alert(`Nie znaleziono prognozy dla ${location}`);
+        } else {
+          appendWeatherData(locationElement, weatherData);
+        }
+        console.log('weather', weatherData);
+      });
+    });
 
-      const temp_span = document.createElement('span');
-      temp_span.innerHTML = weatherData.main.temp;
-      div?.append(temp_span);
-
-      const temp_max_span = document.createElement('span');
-      temp_max_span.innerHTML = weatherData.main.temp_max;
-      div?.append(temp_max_span);
-
-      const temp_min_span = document.createElement('span');
-      temp_min_span.innerHTML = weatherData.main.temp_min;
-      div?.append(temp_min_span);
-
-      const pressure_span = document.createElement('span');
-      pressure_span.innerHTML = weatherData.main.pressure;
-      div?.append(pressure_span);
-
-      const humidity_span = document.createElement('span');
-      humidity_span.innerHTML = weatherData.main.humidity;
-      div?.append(humidity_span);
-
-      const description_span = document.createElement('span');
-      description_span.innerHTML = weatherData.weather[0].description;
-      div?.append(description_span);
-
-      const weather_main_span = document.createElement('span');
-      weather_main_span.innerHTML = weatherData.weather[0].main;
-      div?.append(weather_main_span);
-
-      const wind_span = document.createElement('span');
-      wind_span.innerHTML = weatherData.wind.speed;
-      div?.append(wind_span);
-
-      const wind_direction_span = document.createElement('span');
-      wind_direction_span.innerHTML = weatherData.wind.deg;
-      div?.append(wind_direction_span);
-
-      const clouds_span = document.createElement('span');
-      clouds_span.innerHTML = weatherData.clouds.all;
-      div?.append(clouds_span);
-
-      const name_span = document.createElement('span');
-      name_span.innerHTML = weatherData.name;
-      div?.append(name_span);
-    }
-    console.log(weatherData);
+    // const weatherData = await getWeatherData(location);
+    // if (weatherData.cod == '404') {
+    //   alert(`Nie znaleziono prognozy dla ${location}`);
+    // } else {
+    //   appendWeatherData(div, weatherData);
+    // }
+    // console.log(weatherData);
   }
 });
 
@@ -76,4 +50,61 @@ async function getWeatherData(location: string) {
     `${baseUrl}/weather?q=${location}${unitsType}${appId}${lang}`
   );
   return response.json();
+}
+
+async function searchLocation(location: string) {
+  const response = await fetch(
+    `${baseUrl}/find?q=${location}${unitsType}${appId}${lang}`
+  );
+  return response.json();
+}
+
+function appendWeatherData(div: HTMLDivElement, weatherData: any) {
+  const feels_like_span = document.createElement('span');
+  feels_like_span.innerHTML = weatherData.main.feels_like;
+  div?.append(feels_like_span);
+
+  const temp_span = document.createElement('span');
+  temp_span.innerHTML = weatherData.main.temp;
+  div?.append(temp_span);
+
+  const temp_max_span = document.createElement('span');
+  temp_max_span.innerHTML = weatherData.main.temp_max;
+  div?.append(temp_max_span);
+
+  const temp_min_span = document.createElement('span');
+  temp_min_span.innerHTML = weatherData.main.temp_min;
+  div?.append(temp_min_span);
+
+  const pressure_span = document.createElement('span');
+  pressure_span.innerHTML = weatherData.main.pressure;
+  div?.append(pressure_span);
+
+  const humidity_span = document.createElement('span');
+  humidity_span.innerHTML = weatherData.main.humidity;
+  div?.append(humidity_span);
+
+  const description_span = document.createElement('span');
+  description_span.innerHTML = weatherData.weather[0].description;
+  div?.append(description_span);
+
+  const weather_main_span = document.createElement('span');
+  weather_main_span.innerHTML = weatherData.weather[0].main;
+  div?.append(weather_main_span);
+
+  const wind_span = document.createElement('span');
+  wind_span.innerHTML = weatherData.wind.speed;
+  div?.append(wind_span);
+
+  const wind_direction_span = document.createElement('span');
+  wind_direction_span.innerHTML = weatherData.wind.deg;
+  div?.append(wind_direction_span);
+
+  const clouds_span = document.createElement('span');
+  clouds_span.innerHTML = weatherData.clouds.all;
+  div?.append(clouds_span);
+
+  const name_span = document.createElement('span');
+  name_span.innerHTML = weatherData.name;
+  div?.append(name_span);
 }
