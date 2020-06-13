@@ -19,16 +19,23 @@ button?.addEventListener('click', async () => {
     const locationData = await searchLocation(location);
     console.log('list', locationData);
     locationData.list.forEach((element: any) => {
-      console.log(element);
-      const locationElement = document.createElement('div');
+      console.log('element', element);
+      const listItemId = element.id;
+      const listItemName = element.name;
       const locationButton = document.createElement('button');
       locationButton.innerHTML = element.name;
       locationContainer?.append(locationButton);
       locationButton.addEventListener('click', async () => {
-        const weatherData = await getWeatherData(location);
+        if (weatherContainer != null) {
+          weatherContainer.innerHTML = '';
+        }
+        console.log('pobieram pogode dla: ', listItemName);
+        const weatherData = await getWeatherDataFromId(listItemId);
         if (weatherData.cod == '404') {
-          alert(`Nie znaleziono prognozy dla ${location}`);
+          alert(`Nie znaleziono prognozy dla ${listItemName}`);
         } else {
+          const locationElement = document.createElement('div');
+          weatherContainer?.append(locationElement);
           appendWeatherData(locationElement, weatherData);
         }
         console.log('weather', weatherData);
@@ -44,6 +51,13 @@ button?.addEventListener('click', async () => {
     // console.log(weatherData);
   }
 });
+
+async function getWeatherDataFromId(listItemId: string) {
+  const responseId = await fetch(
+    `${baseUrl}/weather?id=${listItemId}${unitsType}${appId}${lang}`
+  );
+  return responseId.json();
+}
 
 async function getWeatherData(location: string) {
   const response = await fetch(
