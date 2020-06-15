@@ -9,46 +9,63 @@ const baseUrl = 'https://api.openweathermap.org/data/2.5';
 const appId = '&appid=81e564bdda8adddbc2d805694d19cdac';
 const unitsType = '&units=metric';
 const lang = '&lang=pl';
+const iconString = '';
+const iconBaseUrl = 'http://openweathermap.org/img/wn/';
+const iconUrlBack = '@2x.png';
+
 input.value = 'lublin';
 
 button?.addEventListener('click', async () => {
+  if (locationContainer != null) {
+    locationContainer.innerHTML = '';
+  }
+
   const location = input.value;
+  input.value = '';
+
   if (location == null || location == '') {
     alert('Pole nie może być puste');
   } else {
     const locationData = await searchLocation(location);
     console.log('list', locationData);
+
     locationData.list.forEach((element: any) => {
       console.log('element', element);
+
       const listItemId = element.id;
       const listItemName = element.name;
+      const icon = element.weather[0].icon;
+
       const locationButton = document.createElement('button');
       locationButton.innerHTML = element.name;
       locationContainer?.append(locationButton);
+
       locationButton.addEventListener('click', async () => {
         if (weatherContainer != null) {
           weatherContainer.innerHTML = '';
         }
+
+        if (locationContainer != null) {
+          locationContainer.innerHTML = '';
+        }
+
         console.log('pobieram pogode dla: ', listItemName);
         const weatherData = await getWeatherDataFromId(listItemId);
+
         if (weatherData.cod == '404') {
           alert(`Nie znaleziono prognozy dla ${listItemName}`);
         } else {
           const locationElement = document.createElement('div');
           weatherContainer?.append(locationElement);
           appendWeatherData(locationElement, weatherData);
+          const locationElementIcon = document.createElement('div');
+          weatherContainer?.append(locationElementIcon);
+          appendIcon(locationElementIcon, icon);
+          console.log(icon);
         }
         console.log('weather', weatherData);
       });
     });
-
-    // const weatherData = await getWeatherData(location);
-    // if (weatherData.cod == '404') {
-    //   alert(`Nie znaleziono prognozy dla ${location}`);
-    // } else {
-    //   appendWeatherData(div, weatherData);
-    // }
-    // console.log(weatherData);
   }
 });
 
@@ -71,6 +88,15 @@ async function searchLocation(location: string) {
     `${baseUrl}/find?q=${location}${unitsType}${appId}${lang}`
   );
   return response.json();
+}
+
+function appendIcon(div: HTMLDivElement, icon: string) {
+  const iconImg = document.createElement('IMG');
+  iconImg.setAttribute('src', `${iconBaseUrl}${icon}${iconUrlBack}`);
+  iconImg.setAttribute('width', '100');
+  iconImg.setAttribute('height', '100');
+  iconImg.setAttribute('alt', 'Weather Icon');
+  document.body.appendChild(iconImg);
 }
 
 function appendWeatherData(div: HTMLDivElement, weatherData: any) {
