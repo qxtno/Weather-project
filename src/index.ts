@@ -37,6 +37,7 @@ button?.addEventListener('click', async () => {
       const icon = element.weather[0].icon;
 
       const locationButton = document.createElement('button');
+      locationButton.id = 'buttonId';
       locationButton.innerHTML = element.name;
       locationContainer?.append(locationButton);
 
@@ -56,8 +57,10 @@ button?.addEventListener('click', async () => {
           alert(`Nie znaleziono prognozy dla ${listItemName}`);
         } else {
           const locationElement = document.createElement('div');
+          locationElement.id = 'weather_elements';
           weatherContainer?.append(locationElement);
           appendWeatherData(locationElement, weatherData);
+
           const locationElementIcon = document.createElement('div');
           weatherContainer?.append(locationElementIcon);
           appendIcon(locationElementIcon, icon);
@@ -91,60 +94,96 @@ async function searchLocation(location: string) {
 }
 
 function appendIcon(div: HTMLDivElement, icon: string) {
-  const iconImg = document.createElement('IMG');
-  iconImg.setAttribute('src', `${iconBaseUrl}${icon}${iconUrlBack}`);
-  iconImg.setAttribute('width', '100');
-  iconImg.setAttribute('height', '100');
-  iconImg.setAttribute('alt', 'Weather Icon');
-  document.body.appendChild(iconImg);
+  const iconImg = document.createElement('img');
+
+  iconImg.src = `${iconBaseUrl}${icon}${iconUrlBack}`;
+  iconImg.width = 100;
+  iconImg.height = 100;
+  iconImg.alt = 'Weather Icon';
+
+  div.appendChild(iconImg);
 }
 
 function appendWeatherData(div: HTMLDivElement, weatherData: any) {
-  const feels_like_span = document.createElement('span');
-  feels_like_span.innerHTML = weatherData.main.feels_like;
-  div?.append(feels_like_span);
+  const name_span = document.createElement('span');
+  name_span.id = 'name';
+  name_span.innerHTML = weatherData.name;
+  div?.append(name_span);
 
   const temp_span = document.createElement('span');
-  temp_span.innerHTML = weatherData.main.temp;
+  temp_span.id = 'temp';
+  temp_span.textContent = `Temperatura: ${(temp_span.innerHTML =
+    weatherData.main.temp)}\xB0C`;
+
   div?.append(temp_span);
 
-  const temp_max_span = document.createElement('span');
-  temp_max_span.innerHTML = weatherData.main.temp_max;
-  div?.append(temp_max_span);
+  const feels_like_span = document.createElement('span');
+  feels_like_span.id = 'feels_like';
+  feels_like_span.textContent = `Temperatura Odczuwalna: ${(feels_like_span.innerHTML =
+    weatherData.main.feels_like)}\xB0C`;
 
-  const temp_min_span = document.createElement('span');
-  temp_min_span.innerHTML = weatherData.main.temp_min;
-  div?.append(temp_min_span);
+  div?.append(feels_like_span);
+
+  const temp_min_max_span = document.createElement('span');
+  temp_min_max_span.id = 'temp_min_max';
+  temp_min_max_span.textContent = `Temp min: ${(temp_min_max_span.innerHTML =
+    weatherData.main.temp_min)}\xB0C | Temp max: ${(temp_min_max_span.innerHTML =
+    weatherData.main.temp_max)}\xB0C`;
+  div?.append(temp_min_max_span);
 
   const pressure_span = document.createElement('span');
-  pressure_span.innerHTML = weatherData.main.pressure;
+  pressure_span.id = 'pressure';
+  pressure_span.textContent = `Ciśnienie: ${(pressure_span.innerHTML =
+    weatherData.main.pressure)} hPa`;
   div?.append(pressure_span);
 
-  const humidity_span = document.createElement('span');
-  humidity_span.innerHTML = weatherData.main.humidity;
-  div?.append(humidity_span);
-
   const description_span = document.createElement('span');
+  description_span.id = 'description';
   description_span.innerHTML = weatherData.weather[0].description;
   div?.append(description_span);
 
-  const weather_main_span = document.createElement('span');
-  weather_main_span.innerHTML = weatherData.weather[0].main;
-  div?.append(weather_main_span);
+  const wind_dir = getWindDirection(weatherData);
 
   const wind_span = document.createElement('span');
-  wind_span.innerHTML = weatherData.wind.speed;
+  wind_span.id = 'wind';
+  wind_span.textContent = `Wiatr: ${(wind_span.innerHTML =
+    weatherData.wind.speed)} m/s | Kierunek: ${wind_dir}`;
+
   div?.append(wind_span);
 
-  const wind_direction_span = document.createElement('span');
-  wind_direction_span.innerHTML = weatherData.wind.deg;
-  div?.append(wind_direction_span);
-
   const clouds_span = document.createElement('span');
-  clouds_span.innerHTML = weatherData.clouds.all;
+  clouds_span.id = 'clouds';
+  clouds_span.textContent = `Zachmurzenie: ${(clouds_span.innerHTML =
+    weatherData.clouds.all)}%`;
   div?.append(clouds_span);
-
-  const name_span = document.createElement('span');
-  name_span.innerHTML = weatherData.name;
-  div?.append(name_span);
+}
+function getWindDirection(weatherData: any) {
+  const wind_direction = weatherData.wind.deg;
+  var direction = '';
+  if (wind_direction >= 337.5 || wind_direction <= 22.5) {
+    direction = 'N';
+    return direction;
+  } else if (wind_direction <= 67.5) {
+    direction = 'NE';
+    return direction;
+  } else if (wind_direction <= 112.5) {
+    direction = 'E';
+    return direction;
+  } else if (wind_direction <= 157.5) {
+    direction = 'SE';
+    return direction;
+  } else if (wind_direction <= 202.5) {
+    direction = 'S';
+    return direction;
+  } else if (wind_direction <= 247.5) {
+    direction = 'SW';
+    return direction;
+  } else if (wind_direction <= 292.5) {
+    direction = 'W';
+    return direction;
+  } else if (wind_direction <= 337.5) {
+    direction = 'NW';
+    return direction;
+  }
+  return;
 }

@@ -117,205 +117,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"index.ts":[function(require,module,exports) {
-"use strict";
+})({"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
 
-var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
-  function adopt(value) {
-    return value instanceof P ? value : new P(function (resolve) {
-      resolve(value);
-    });
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
   }
 
-  return new (P || (P = Promise))(function (resolve, reject) {
-    function fulfilled(value) {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
       }
     }
 
-    function rejected(value) {
-      try {
-        step(generator["throw"](value));
-      } catch (e) {
-        reject(e);
-      }
-    }
-
-    function step(result) {
-      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-    }
-
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
-  });
-};
-
-const button = document.querySelector('#butonek');
-const input = document.querySelector('#location');
-const weatherContainer = document.querySelector('#weather_container');
-const locationContainer = document.querySelector('#location_list');
-const baseUrl = 'https://api.openweathermap.org/data/2.5';
-const appId = '&appid=81e564bdda8adddbc2d805694d19cdac';
-const unitsType = '&units=metric';
-const lang = '&lang=pl';
-const iconString = '';
-const iconBaseUrl = 'http://openweathermap.org/img/wn/';
-const iconUrlBack = '@2x.png';
-input.value = 'lublin';
-button === null || button === void 0 ? void 0 : button.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-  if (locationContainer != null) {
-    locationContainer.innerHTML = '';
-  }
-
-  const location = input.value;
-  input.value = '';
-
-  if (location == null || location == '') {
-    alert('Pole nie może być puste');
-  } else {
-    const locationData = yield searchLocation(location);
-    console.log('list', locationData);
-    locationData.list.forEach(element => {
-      console.log('element', element);
-      const listItemId = element.id;
-      const listItemName = element.name;
-      const icon = element.weather[0].icon;
-      const locationButton = document.createElement('button');
-      locationButton.id = 'buttonId';
-      locationButton.innerHTML = element.name;
-      locationContainer === null || locationContainer === void 0 ? void 0 : locationContainer.append(locationButton);
-      locationButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-        if (weatherContainer != null) {
-          weatherContainer.innerHTML = '';
-        }
-
-        if (locationContainer != null) {
-          locationContainer.innerHTML = '';
-        }
-
-        console.log('pobieram pogode dla: ', listItemName);
-        const weatherData = yield getWeatherDataFromId(listItemId);
-
-        if (weatherData.cod == '404') {
-          alert(`Nie znaleziono prognozy dla ${listItemName}`);
-        } else {
-          const locationElement = document.createElement('div');
-          locationElement.id = 'weather_elements';
-          weatherContainer === null || weatherContainer === void 0 ? void 0 : weatherContainer.append(locationElement);
-          appendWeatherData(locationElement, weatherData);
-          const locationElementIcon = document.createElement('div');
-          weatherContainer === null || weatherContainer === void 0 ? void 0 : weatherContainer.append(locationElementIcon);
-          appendIcon(locationElementIcon, icon);
-          console.log(icon);
-        }
-
-        console.log('weather', weatherData);
-      }));
-    });
-  }
-}));
-
-function getWeatherDataFromId(listItemId) {
-  return __awaiter(this, void 0, void 0, function* () {
-    const responseId = yield fetch(`${baseUrl}/weather?id=${listItemId}${unitsType}${appId}${lang}`);
-    return responseId.json();
-  });
+    cssTimeout = null;
+  }, 50);
 }
 
-function getWeatherData(location) {
-  return __awaiter(this, void 0, void 0, function* () {
-    const response = yield fetch(`${baseUrl}/weather?q=${location}${unitsType}${appId}${lang}`);
-    return response.json();
-  });
-}
+module.exports = reloadCSS;
+},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"styles.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
 
-function searchLocation(location) {
-  return __awaiter(this, void 0, void 0, function* () {
-    const response = yield fetch(`${baseUrl}/find?q=${location}${unitsType}${appId}${lang}`);
-    return response.json();
-  });
-}
-
-function appendIcon(div, icon) {
-  const iconImg = document.createElement('img');
-  iconImg.src = `${iconBaseUrl}${icon}${iconUrlBack}`;
-  iconImg.width = 100;
-  iconImg.height = 100;
-  iconImg.alt = 'Weather Icon';
-  div.appendChild(iconImg);
-}
-
-function appendWeatherData(div, weatherData) {
-  const name_span = document.createElement('span');
-  name_span.id = 'name';
-  name_span.innerHTML = weatherData.name;
-  div === null || div === void 0 ? void 0 : div.append(name_span);
-  const temp_span = document.createElement('span');
-  temp_span.id = 'temp';
-  temp_span.textContent = `Temperatura: ${temp_span.innerHTML = weatherData.main.temp}\xB0C`;
-  div === null || div === void 0 ? void 0 : div.append(temp_span);
-  const feels_like_span = document.createElement('span');
-  feels_like_span.id = 'feels_like';
-  feels_like_span.textContent = `Temperatura Odczuwalna: ${feels_like_span.innerHTML = weatherData.main.feels_like}\xB0C`;
-  div === null || div === void 0 ? void 0 : div.append(feels_like_span);
-  const temp_min_max_span = document.createElement('span');
-  temp_min_max_span.id = 'temp_min_max';
-  temp_min_max_span.textContent = `Temp min: ${temp_min_max_span.innerHTML = weatherData.main.temp_min}\xB0C | Temp max: ${temp_min_max_span.innerHTML = weatherData.main.temp_max}\xB0C`;
-  div === null || div === void 0 ? void 0 : div.append(temp_min_max_span);
-  const pressure_span = document.createElement('span');
-  pressure_span.id = 'pressure';
-  pressure_span.textContent = `Ciśnienie: ${pressure_span.innerHTML = weatherData.main.pressure} hPa`;
-  div === null || div === void 0 ? void 0 : div.append(pressure_span);
-  const description_span = document.createElement('span');
-  description_span.id = 'description';
-  description_span.innerHTML = weatherData.weather[0].description;
-  div === null || div === void 0 ? void 0 : div.append(description_span);
-  const wind_dir = getWindDirection(weatherData);
-  const wind_span = document.createElement('span');
-  wind_span.id = 'wind';
-  wind_span.textContent = `Wiatr: ${wind_span.innerHTML = weatherData.wind.speed} m/s | Kierunek: ${wind_dir}`;
-  div === null || div === void 0 ? void 0 : div.append(wind_span);
-  const clouds_span = document.createElement('span');
-  clouds_span.id = 'clouds';
-  clouds_span.textContent = `Zachmurzenie: ${clouds_span.innerHTML = weatherData.clouds.all}%`;
-  div === null || div === void 0 ? void 0 : div.append(clouds_span);
-}
-
-function getWindDirection(weatherData) {
-  const wind_direction = weatherData.wind.deg;
-  var direction = '';
-
-  if (wind_direction >= 337.5 || wind_direction <= 22.5) {
-    direction = 'N';
-    return direction;
-  } else if (wind_direction <= 67.5) {
-    direction = 'NE';
-    return direction;
-  } else if (wind_direction <= 112.5) {
-    direction = 'E';
-    return direction;
-  } else if (wind_direction <= 157.5) {
-    direction = 'SE';
-    return direction;
-  } else if (wind_direction <= 202.5) {
-    direction = 'S';
-    return direction;
-  } else if (wind_direction <= 247.5) {
-    direction = 'SW';
-    return direction;
-  } else if (wind_direction <= 292.5) {
-    direction = 'W';
-    return direction;
-  } else if (wind_direction <= 337.5) {
-    direction = 'NW';
-    return direction;
-  }
-
-  return;
-}
-},{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -519,5 +393,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.ts"], null)
-//# sourceMappingURL=/src.77de5100.js.map
+},{}]},{},["../node_modules/parcel-bundler/src/builtins/hmr-runtime.js"], null)
+//# sourceMappingURL=/styles.8986bff4.js.map
