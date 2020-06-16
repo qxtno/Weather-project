@@ -50,10 +50,11 @@ span {
 
 #weather_container {
   background-color: rgb(130, 0, 252);
-  margin-left: 20%;
-  margin-right: 20%;
+  margin-left: 30rem;
+  margin-right: 30rem;
   border-radius: 5%;
   color: lightgray;
+  margin-bottom: 5rem;
 }
 
 #name {
@@ -61,6 +62,23 @@ span {
   font-size: 20px;
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+#forecast_container {
+  overflow: auto;
+  display: flex;
+}
+
+#forecast_item {
+  background-color: rgb(130, 0, 252);
+  margin-left: 1px;
+  margin-right: 1px;
+  padding-left: 5rem;
+  padding-right: 5rem;
+  border-radius: 5%;
+  color: lightgray;
+  display: grid;
+  width: max-content;
 }
 
 

@@ -156,6 +156,7 @@ const button = document.querySelector('#butonek');
 const input = document.querySelector('#location');
 const weatherContainer = document.querySelector('#weather_container');
 const locationContainer = document.querySelector('#location_list');
+const forecastContainer = document.querySelector('#forecast_container');
 const baseUrl = 'https://api.openweathermap.org/data/2.5';
 const appId = '&appid=81e564bdda8adddbc2d805694d19cdac';
 const unitsType = '&units=metric';
@@ -212,6 +213,11 @@ button === null || button === void 0 ? void 0 : button.addEventListener('click',
         }
 
         console.log('weather', weatherData);
+        const weatherForecast = yield getForecast(listItemId);
+        console.log('forecast', weatherForecast);
+        const forecastItems = document.createElement('div');
+        forecastContainer === null || forecastContainer === void 0 ? void 0 : forecastContainer.append(forecastItems);
+        appendForecastData(forecastItems, weatherForecast);
       }));
     });
   }
@@ -315,6 +321,55 @@ function getWindDirection(weatherData) {
 
   return;
 }
+
+function getForecast(listItemId) {
+  return __awaiter(this, void 0, void 0, function* () {
+    const responseIdForecast = yield fetch(`${baseUrl}/forecast?id=${listItemId}${unitsType}${appId}${lang}`);
+    return responseIdForecast.json();
+  });
+}
+
+function appendForecastData(div, forecastData) {
+  const arraySize = forecastData.list.length - 1;
+  console.log(arraySize);
+
+  for (var i = 0; i < arraySize; i++) {
+    const forecastItem = document.createElement('div');
+    forecastItem.id = 'forecast_item';
+    forecastContainer === null || forecastContainer === void 0 ? void 0 : forecastContainer.append(forecastItem);
+    const f_text_span = document.createElement('span');
+    f_text_span.innerHTML = forecastData.list[i].dt_txt;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_text_span);
+    const f_temp_span = document.createElement('span');
+    f_temp_span.innerHTML = forecastData.list[i].main.temp;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_span);
+    const f_temp_max_span = document.createElement('span');
+    f_temp_max_span.innerHTML = forecastData.list[i].main.temp_max;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_max_span);
+    const f_temp_min_span = document.createElement('span');
+    f_temp_min_span.innerHTML = forecastData.list[i].main.temp_min;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_min_span);
+    const f_pressure_span = document.createElement('span');
+    f_pressure_span.innerHTML = forecastData.list[i].main.pressure;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_pressure_span);
+    const f_description_span = document.createElement('span');
+    f_description_span.innerHTML = forecastData.list[i].weather[0].description;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_description_span);
+    const f_wind_span = document.createElement('span');
+    f_wind_span.innerHTML = forecastData.list[i].wind.speed;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_wind_span);
+    const f_wind_direction_span = document.createElement('span');
+    f_wind_direction_span.innerHTML = forecastData.list[i].wind.deg;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_wind_direction_span);
+    const forecastIconImgString = forecastData.list[i].weather[0].icon;
+    const forecastIconImg = document.createElement('img');
+    forecastIconImg.src = `${iconBaseUrl}${forecastIconImgString}${iconUrlBack}`;
+    forecastIconImg.width = 100;
+    forecastIconImg.height = 100;
+    forecastIconImg.alt = 'Weather Icon';
+    forecastItem.appendChild(forecastIconImg);
+  }
+}
 },{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -343,7 +398,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57621" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50496" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

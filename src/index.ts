@@ -4,6 +4,7 @@ const input: HTMLInputElement = document.querySelector(
 ) as HTMLInputElement;
 const weatherContainer = document.querySelector('#weather_container');
 const locationContainer = document.querySelector('#location_list');
+const forecastContainer = document.querySelector('#forecast_container');
 
 const baseUrl = 'https://api.openweathermap.org/data/2.5';
 const appId = '&appid=81e564bdda8adddbc2d805694d19cdac';
@@ -67,6 +68,13 @@ button?.addEventListener('click', async () => {
           console.log(icon);
         }
         console.log('weather', weatherData);
+
+        const weatherForecast = await getForecast(listItemId);
+        console.log('forecast', weatherForecast);
+
+        const forecastItems = document.createElement('div');
+        forecastContainer?.append(forecastItems);
+        appendForecastData(forecastItems, weatherForecast);
       });
     });
   }
@@ -157,6 +165,7 @@ function appendWeatherData(div: HTMLDivElement, weatherData: any) {
     weatherData.clouds.all)}%`;
   div?.append(clouds_span);
 }
+
 function getWindDirection(weatherData: any) {
   const wind_direction = weatherData.wind.deg;
   var direction = '';
@@ -186,4 +195,64 @@ function getWindDirection(weatherData: any) {
     return direction;
   }
   return;
+}
+
+async function getForecast(listItemId: string) {
+  const responseIdForecast = await fetch(
+    `${baseUrl}/forecast?id=${listItemId}${unitsType}${appId}${lang}`
+  );
+  return responseIdForecast.json();
+}
+
+function appendForecastData(div: HTMLDivElement, forecastData: any) {
+  const arraySize = forecastData.list.length - 1;
+  console.log(arraySize);
+
+  for (var i = 0; i < arraySize; i++) {
+    const forecastItem = document.createElement('div');
+    forecastItem.id = 'forecast_item';
+    forecastContainer?.append(forecastItem);
+
+    const f_text_span = document.createElement('span');
+    f_text_span.innerHTML = forecastData.list[i].dt_txt;
+    forecastItem?.append(f_text_span);
+
+    const f_temp_span = document.createElement('span');
+    f_temp_span.innerHTML = forecastData.list[i].main.temp;
+    forecastItem?.append(f_temp_span);
+
+    const f_temp_max_span = document.createElement('span');
+    f_temp_max_span.innerHTML = forecastData.list[i].main.temp_max;
+    forecastItem?.append(f_temp_max_span);
+
+    const f_temp_min_span = document.createElement('span');
+    f_temp_min_span.innerHTML = forecastData.list[i].main.temp_min;
+    forecastItem?.append(f_temp_min_span);
+
+    const f_pressure_span = document.createElement('span');
+    f_pressure_span.innerHTML = forecastData.list[i].main.pressure;
+    forecastItem?.append(f_pressure_span);
+
+    const f_description_span = document.createElement('span');
+    f_description_span.innerHTML = forecastData.list[i].weather[0].description;
+    forecastItem?.append(f_description_span);
+
+    const f_wind_span = document.createElement('span');
+    f_wind_span.innerHTML = forecastData.list[i].wind.speed;
+    forecastItem?.append(f_wind_span);
+
+    const f_wind_direction_span = document.createElement('span');
+    f_wind_direction_span.innerHTML = forecastData.list[i].wind.deg;
+    forecastItem?.append(f_wind_direction_span);
+
+    const forecastIconImgString = forecastData.list[i].weather[0].icon;
+    const forecastIconImg = document.createElement('img');
+
+    forecastIconImg.src = `${iconBaseUrl}${forecastIconImgString}${iconUrlBack}`;
+    forecastIconImg.width = 100;
+    forecastIconImg.height = 100;
+    forecastIconImg.alt = 'Weather Icon';
+
+    forecastItem.appendChild(forecastIconImg);
+  }
 }
