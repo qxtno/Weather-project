@@ -197,6 +197,37 @@ function getWindDirection(weatherData: any) {
   return;
 }
 
+function getWindDirectionForeCast(forcastData: any, index: any) {
+  const f_wind_direction = forcastData.list[index].wind.deg;
+  var direction = '';
+  if (f_wind_direction >= 337.5 || f_wind_direction <= 22.5) {
+    direction = 'N';
+    return direction;
+  } else if (f_wind_direction <= 67.5) {
+    direction = 'NE';
+    return direction;
+  } else if (f_wind_direction <= 112.5) {
+    direction = 'E';
+    return direction;
+  } else if (f_wind_direction <= 157.5) {
+    direction = 'SE';
+    return direction;
+  } else if (f_wind_direction <= 202.5) {
+    direction = 'S';
+    return direction;
+  } else if (f_wind_direction <= 247.5) {
+    direction = 'SW';
+    return direction;
+  } else if (f_wind_direction <= 292.5) {
+    direction = 'W';
+    return direction;
+  } else if (f_wind_direction <= 337.5) {
+    direction = 'NW';
+    return direction;
+  }
+  return;
+}
+
 async function getForecast(listItemId: string) {
   const responseIdForecast = await fetch(
     `${baseUrl}/forecast?id=${listItemId}${unitsType}${appId}${lang}`
@@ -214,36 +245,48 @@ function appendForecastData(div: HTMLDivElement, forecastData: any) {
     forecastContainer?.append(forecastItem);
 
     const f_text_span = document.createElement('span');
+    f_text_span.id = 'f_text';
     f_text_span.innerHTML = forecastData.list[i].dt_txt;
     forecastItem?.append(f_text_span);
 
     const f_temp_span = document.createElement('span');
-    f_temp_span.innerHTML = forecastData.list[i].main.temp;
+    f_temp_span.id = 'f_temp';
+    f_temp_span.textContent = `Temperatura: ${(f_temp_span.innerHTML =
+      forecastData.list[i].main.temp)}\xB0C`;
     forecastItem?.append(f_temp_span);
 
-    const f_temp_max_span = document.createElement('span');
-    f_temp_max_span.innerHTML = forecastData.list[i].main.temp_max;
-    forecastItem?.append(f_temp_max_span);
-
-    const f_temp_min_span = document.createElement('span');
-    f_temp_min_span.innerHTML = forecastData.list[i].main.temp_min;
-    forecastItem?.append(f_temp_min_span);
+    const f_temp_min_max_span = document.createElement('span');
+    f_temp_min_max_span.id = 'f_min_max_temp';
+    f_temp_min_max_span.textContent = `Temp min: ${(f_temp_min_max_span.innerHTML =
+      forecastData.list[i].main.temp_max)}
+      \xB0C | Temp max: ${(f_temp_min_max_span.innerHTML =
+        forecastData.list[i].main.temp_min)}\xB0C`;
+    forecastItem?.append(f_temp_min_max_span);
 
     const f_pressure_span = document.createElement('span');
-    f_pressure_span.innerHTML = forecastData.list[i].main.pressure;
+    f_pressure_span.id = 'f_pressure';
+    f_pressure_span.textContent = `Ciśnienie: ${(f_pressure_span.innerHTML =
+      forecastData.list[i].main.pressure)} hPa`;
     forecastItem?.append(f_pressure_span);
 
     const f_description_span = document.createElement('span');
+    f_description_span.id = 'f_description';
     f_description_span.innerHTML = forecastData.list[i].weather[0].description;
     forecastItem?.append(f_description_span);
 
+    const f_wind_dir = getWindDirectionForeCast(forecastData, i);
+
     const f_wind_span = document.createElement('span');
-    f_wind_span.innerHTML = forecastData.list[i].wind.speed;
+    f_wind_span.id = 'f_wind';
+    f_wind_span.textContent = `Wiatr: ${(f_wind_span.innerHTML =
+      forecastData.list[i].wind.speed)} m/s | Kierunek: ${f_wind_dir}`;
     forecastItem?.append(f_wind_span);
 
-    const f_wind_direction_span = document.createElement('span');
-    f_wind_direction_span.innerHTML = forecastData.list[i].wind.deg;
-    forecastItem?.append(f_wind_direction_span);
+    const f_clouds_span = document.createElement('span');
+    f_clouds_span.id = 'f_clouds';
+    f_clouds_span.textContent = `Zachmurzenie: ${(f_clouds_span.innerHTML =
+      forecastData.list[i].clouds.all)}%`;
+    forecastItem?.append(f_clouds_span);
 
     const forecastIconImgString = forecastData.list[i].weather[0].icon;
     const forecastIconImg = document.createElement('img');

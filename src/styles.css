@@ -73,10 +73,14 @@ span {
   background-color: rgb(130, 0, 252);
   margin-left: 1px;
   margin-right: 1px;
-  padding-left: 5rem;
-  padding-right: 5rem;
+  padding-left: 100px;
+  padding-right: 100px;
   border-radius: 5%;
   color: lightgray;
   display: grid;
   width: max-content;
+}
+
+#f_text {
+  padding-top: 30px;
 }

@@ -322,6 +322,39 @@ function getWindDirection(weatherData) {
   return;
 }
 
+function getWindDirectionForeCast(forcastData, index) {
+  const f_wind_direction = forcastData.list[index].wind.deg;
+  var direction = '';
+
+  if (f_wind_direction >= 337.5 || f_wind_direction <= 22.5) {
+    direction = 'N';
+    return direction;
+  } else if (f_wind_direction <= 67.5) {
+    direction = 'NE';
+    return direction;
+  } else if (f_wind_direction <= 112.5) {
+    direction = 'E';
+    return direction;
+  } else if (f_wind_direction <= 157.5) {
+    direction = 'SE';
+    return direction;
+  } else if (f_wind_direction <= 202.5) {
+    direction = 'S';
+    return direction;
+  } else if (f_wind_direction <= 247.5) {
+    direction = 'SW';
+    return direction;
+  } else if (f_wind_direction <= 292.5) {
+    direction = 'W';
+    return direction;
+  } else if (f_wind_direction <= 337.5) {
+    direction = 'NW';
+    return direction;
+  }
+
+  return;
+}
+
 function getForecast(listItemId) {
   return __awaiter(this, void 0, void 0, function* () {
     const responseIdForecast = yield fetch(`${baseUrl}/forecast?id=${listItemId}${unitsType}${appId}${lang}`);
@@ -338,29 +371,35 @@ function appendForecastData(div, forecastData) {
     forecastItem.id = 'forecast_item';
     forecastContainer === null || forecastContainer === void 0 ? void 0 : forecastContainer.append(forecastItem);
     const f_text_span = document.createElement('span');
+    f_text_span.id = 'f_text';
     f_text_span.innerHTML = forecastData.list[i].dt_txt;
     forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_text_span);
     const f_temp_span = document.createElement('span');
-    f_temp_span.innerHTML = forecastData.list[i].main.temp;
+    f_temp_span.id = 'f_temp';
+    f_temp_span.textContent = `Temperatura: ${f_temp_span.innerHTML = forecastData.list[i].main.temp}\xB0C`;
     forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_span);
-    const f_temp_max_span = document.createElement('span');
-    f_temp_max_span.innerHTML = forecastData.list[i].main.temp_max;
-    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_max_span);
-    const f_temp_min_span = document.createElement('span');
-    f_temp_min_span.innerHTML = forecastData.list[i].main.temp_min;
-    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_min_span);
+    const f_temp_min_max_span = document.createElement('span');
+    f_temp_min_max_span.id = 'f_min_max_temp';
+    f_temp_min_max_span.textContent = `Temp min: ${f_temp_min_max_span.innerHTML = forecastData.list[i].main.temp_max}
+      \xB0C | Temp max: ${f_temp_min_max_span.innerHTML = forecastData.list[i].main.temp_min}\xB0C`;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_temp_min_max_span);
     const f_pressure_span = document.createElement('span');
-    f_pressure_span.innerHTML = forecastData.list[i].main.pressure;
+    f_pressure_span.id = 'f_pressure';
+    f_pressure_span.textContent = `Ciśnienie: ${f_pressure_span.innerHTML = forecastData.list[i].main.pressure} hPa`;
     forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_pressure_span);
     const f_description_span = document.createElement('span');
+    f_description_span.id = 'f_description';
     f_description_span.innerHTML = forecastData.list[i].weather[0].description;
     forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_description_span);
+    const f_wind_dir = getWindDirectionForeCast(forecastData, i);
     const f_wind_span = document.createElement('span');
-    f_wind_span.innerHTML = forecastData.list[i].wind.speed;
+    f_wind_span.id = 'f_wind';
+    f_wind_span.textContent = `Wiatr: ${f_wind_span.innerHTML = forecastData.list[i].wind.speed} m/s | Kierunek: ${f_wind_dir}`;
     forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_wind_span);
-    const f_wind_direction_span = document.createElement('span');
-    f_wind_direction_span.innerHTML = forecastData.list[i].wind.deg;
-    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_wind_direction_span);
+    const f_clouds_span = document.createElement('span');
+    f_clouds_span.id = 'f_clouds';
+    f_clouds_span.textContent = `Zachmurzenie: ${f_clouds_span.innerHTML = forecastData.list[i].clouds.all}%`;
+    forecastItem === null || forecastItem === void 0 ? void 0 : forecastItem.append(f_clouds_span);
     const forecastIconImgString = forecastData.list[i].weather[0].icon;
     const forecastIconImg = document.createElement('img');
     forecastIconImg.src = `${iconBaseUrl}${forecastIconImgString}${iconUrlBack}`;
@@ -398,7 +437,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50496" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51451" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
