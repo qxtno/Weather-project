@@ -16,7 +16,17 @@ const iconUrlBack = '@2x.png';
 
 input.value = 'lublin';
 
+input?.addEventListener('keyup', (event) => {
+  if (event.keyCode === 13) {
+    onSearch();
+  }
+});
+
 button?.addEventListener('click', async () => {
+  onSearch();
+});
+
+async function onSearch() {
   if (locationContainer != null) {
     locationContainer.innerHTML = '';
   }
@@ -33,14 +43,23 @@ button?.addEventListener('click', async () => {
     locationData.list.forEach((element: any) => {
       console.log('element', element);
 
+      const listItem = document.createElement('div');
+      listItem.id = 'list_item';
+      locationContainer?.append(listItem);
+
       const listItemId = element.id;
       const listItemName = element.name;
       const icon = element.weather[0].icon;
 
       const locationButton = document.createElement('button');
-      locationButton.id = 'buttonId';
+      locationButton.id = 'button_id';
       locationButton.innerHTML = element.name;
-      locationContainer?.append(locationButton);
+      listItem?.append(locationButton);
+
+      const cordButton = document.createElement('button');
+      cordButton.id = 'cord_button_id';
+      cordButton.textContent = `[${element.coord.lat} | ${element.coord.lon}]`;
+      listItem?.append(cordButton);
 
       locationButton.addEventListener('click', async () => {
         if (weatherContainer != null) {
@@ -76,9 +95,15 @@ button?.addEventListener('click', async () => {
         forecastContainer?.append(forecastItems);
         appendForecastData(forecastItems, weatherForecast);
       });
+
+      const cordURL = `https://www.google.com/maps/search/${element.coord.lat},${element.coord.lon}`;
+
+      cordButton.addEventListener('click', () => {
+        window.open(cordURL, '_blank');
+      });
     });
   }
-});
+}
 
 async function getWeatherDataFromId(listItemId: string) {
   const responseId = await fetch(
