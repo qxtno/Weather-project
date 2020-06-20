@@ -13,7 +13,6 @@ const lang = '&lang=pl';
 const iconString = '';
 const iconBaseUrl = 'http://openweathermap.org/img/wn/';
 const iconUrlBack = '@2x.png';
-input.value = 'lublin';
 
 input?.addEventListener('keyup', (event) => {
   if (event.keyCode === 13) {
@@ -178,7 +177,7 @@ function appendWeatherData(div: HTMLDivElement, weatherData: any) {
   description_span.innerHTML = weatherData.weather[0].description;
   div?.append(description_span);
 
-  const wind_dir = getWindDirection(weatherData);
+  const wind_dir = getWindDirection(weatherData.wind.deg);
 
   const wind_span = document.createElement('span');
   wind_span.id = 'wind';
@@ -194,8 +193,7 @@ function appendWeatherData(div: HTMLDivElement, weatherData: any) {
   div?.append(clouds_span);
 }
 
-function getWindDirection(weatherData: any) {
-  const wind_direction = weatherData.wind.deg;
+function getWindDirection(wind_direction: number) {
   var direction = '';
   if (wind_direction >= 337.5 || wind_direction <= 22.5) {
     direction = 'N';
@@ -218,42 +216,10 @@ function getWindDirection(weatherData: any) {
   } else if (wind_direction <= 292.5) {
     direction = 'W';
     return direction;
-  } else if (wind_direction <= 337.5) {
+  } else {
     direction = 'NW';
     return direction;
   }
-  return;
-}
-
-function getWindDirectionForeCast(forcastData: any, index: any) {
-  const f_wind_direction = forcastData.list[index].wind.deg;
-  var direction = '';
-  if (f_wind_direction >= 337.5 || f_wind_direction <= 22.5) {
-    direction = 'N';
-    return direction;
-  } else if (f_wind_direction <= 67.5) {
-    direction = 'NE';
-    return direction;
-  } else if (f_wind_direction <= 112.5) {
-    direction = 'E';
-    return direction;
-  } else if (f_wind_direction <= 157.5) {
-    direction = 'SE';
-    return direction;
-  } else if (f_wind_direction <= 202.5) {
-    direction = 'S';
-    return direction;
-  } else if (f_wind_direction <= 247.5) {
-    direction = 'SW';
-    return direction;
-  } else if (f_wind_direction <= 292.5) {
-    direction = 'W';
-    return direction;
-  } else if (f_wind_direction <= 337.5) {
-    direction = 'NW';
-    return direction;
-  }
-  return;
 }
 
 async function getForecast(listItemId: string) {
@@ -331,7 +297,7 @@ function appendForecastData(div: HTMLDivElement, forecastData: any) {
     f_description_span.innerHTML = forecastData.list[i].weather[0].description;
     forecastItem?.append(f_description_span);
 
-    const f_wind_dir = getWindDirectionForeCast(forecastData, i);
+    const f_wind_dir = getWindDirection(forecastData.list[i].wind.deg);
 
     const f_wind_span = document.createElement('span');
     f_wind_span.classList.add('f_wind');
