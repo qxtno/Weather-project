@@ -13,7 +13,6 @@ const lang = '&lang=pl';
 const iconString = '';
 const iconBaseUrl = 'http://openweathermap.org/img/wn/';
 const iconUrlBack = '@2x.png';
-
 input.value = 'lublin';
 
 input?.addEventListener('keyup', (event) => {
@@ -44,22 +43,29 @@ async function onSearch() {
       console.log('element', element);
 
       const listItem = document.createElement('div');
-      listItem.id = 'list_item';
+      listItem.classList.add('list_item');
       locationContainer?.append(listItem);
 
       const listItemId = element.id;
       const listItemName = element.name;
       const icon = element.weather[0].icon;
 
-      const locationButton = document.createElement('button');
-      locationButton.id = 'button_id';
-      locationButton.innerHTML = element.name;
-      listItem?.append(locationButton);
+      const locationText = document.createElement('span');
+      locationText.classList.add('location_text');
+      locationText.innerHTML = `${listItemName}`;
+      listItem.append(locationText);
 
-      const cordButton = document.createElement('button');
-      cordButton.id = 'cord_button_id';
-      cordButton.textContent = `[${element.coord.lat} | ${element.coord.lon}]`;
-      listItem?.append(cordButton);
+      const cordLink = document.createElement('a');
+      cordLink.classList.add('cord_link');
+      cordLink.textContent = `[${element.coord.lat},${element.coord.lon}]`;
+      cordLink.href = `https://www.google.com/maps/search/${element.coord.lat},${element.coord.lon}`;
+      cordLink.target = '_blank';
+      listItem?.append(cordLink);
+
+      const locationButton = document.createElement('button');
+      locationButton.classList.add('button_id');
+      locationButton.innerHTML = 'Pokaż prognozę';
+      listItem?.append(locationButton);
 
       locationButton.addEventListener('click', async () => {
         if (weatherContainer != null) {
@@ -92,14 +98,11 @@ async function onSearch() {
         console.log('forecast', weatherForecast);
 
         const forecastItems = document.createElement('div');
+        forecastItems.id = 'forecast_text';
+        forecastItems.innerHTML = 'Prognoza na najbliższe dni';
         forecastContainer?.append(forecastItems);
+
         appendForecastData(forecastItems, weatherForecast);
-      });
-
-      const cordURL = `https://www.google.com/maps/search/${element.coord.lat},${element.coord.lon}`;
-
-      cordButton.addEventListener('click', () => {
-        window.open(cordURL, '_blank');
       });
     });
   }
@@ -263,25 +266,54 @@ async function getForecast(listItemId: string) {
 function appendForecastData(div: HTMLDivElement, forecastData: any) {
   const arraySize = forecastData.list.length - 1;
   console.log(arraySize);
+  const forecastItemContainerElements = document.createElement('div');
+  forecastItemContainerElements.classList.add('forecast_elements');
+  forecastContainer?.append(forecastItemContainerElements);
 
   for (var i = 0; i < arraySize; i++) {
     const forecastItem = document.createElement('div');
-    forecastItem.id = 'forecast_item';
-    forecastContainer?.append(forecastItem);
+    forecastItem.classList.add('forecast_item');
+    const forecastItemContainer = document.createElement('div');
+    forecastItemContainer.classList.add('forecast_item_container');
+    forecastItemContainerElements?.append(forecastItemContainer);
+    forecastItemContainer.append(forecastItem);
+
+    const allDays = [
+      'Niedziela',
+      'Poniedziałek',
+      'Wtorek',
+      'Środa',
+      'Czwartek',
+      'Piątek',
+      'Sobota',
+    ];
+    const d = new Date(forecastData.list[i].dt * 1000);
+    const dayName = allDays[d.getDay()];
+    console.log(dayName);
+
+    const dateTimeString =
+      '(' +
+      ('0' + d.getDate()).slice(-2) +
+      '.' +
+      ('0' + (d.getMonth() + 1)).slice(-2) +
+      ') ' +
+      ('0' + d.getHours()).slice(-2) +
+      ':' +
+      ('0' + d.getMinutes()).slice(-2);
 
     const f_text_span = document.createElement('span');
-    f_text_span.id = 'f_text';
-    f_text_span.innerHTML = forecastData.list[i].dt_txt;
+    f_text_span.classList.add('f_text');
+    f_text_span.innerHTML = `${dayName} ${dateTimeString}`;
     forecastItem?.append(f_text_span);
 
     const f_temp_span = document.createElement('span');
-    f_temp_span.id = 'f_temp';
+    f_temp_span.classList.add('f_temp');
     f_temp_span.textContent = `Temperatura: ${(f_temp_span.innerHTML =
       forecastData.list[i].main.temp)}\xB0C`;
     forecastItem?.append(f_temp_span);
 
     const f_temp_min_max_span = document.createElement('span');
-    f_temp_min_max_span.id = 'f_min_max_temp';
+    f_temp_min_max_span.classList.add('f_min_max_temp');
     f_temp_min_max_span.textContent = `Temp min: ${(f_temp_min_max_span.innerHTML =
       forecastData.list[i].main.temp_max)}
       \xB0C | Temp max: ${(f_temp_min_max_span.innerHTML =
@@ -289,26 +321,26 @@ function appendForecastData(div: HTMLDivElement, forecastData: any) {
     forecastItem?.append(f_temp_min_max_span);
 
     const f_pressure_span = document.createElement('span');
-    f_pressure_span.id = 'f_pressure';
+    f_pressure_span.classList.add('f_pressure');
     f_pressure_span.textContent = `Ciśnienie: ${(f_pressure_span.innerHTML =
       forecastData.list[i].main.pressure)} hPa`;
     forecastItem?.append(f_pressure_span);
 
     const f_description_span = document.createElement('span');
-    f_description_span.id = 'f_description';
+    f_description_span.classList.add('f_description');
     f_description_span.innerHTML = forecastData.list[i].weather[0].description;
     forecastItem?.append(f_description_span);
 
     const f_wind_dir = getWindDirectionForeCast(forecastData, i);
 
     const f_wind_span = document.createElement('span');
-    f_wind_span.id = 'f_wind';
+    f_wind_span.classList.add('f_wind');
     f_wind_span.textContent = `Wiatr: ${(f_wind_span.innerHTML =
       forecastData.list[i].wind.speed)} m/s | Kierunek: ${f_wind_dir}`;
     forecastItem?.append(f_wind_span);
 
     const f_clouds_span = document.createElement('span');
-    f_clouds_span.id = 'f_clouds';
+    f_clouds_span.classList.add('f_clouds');
     f_clouds_span.textContent = `Zachmurzenie: ${(f_clouds_span.innerHTML =
       forecastData.list[i].clouds.all)}%`;
     forecastItem?.append(f_clouds_span);
