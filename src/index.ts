@@ -28,6 +28,13 @@ async function onSearch() {
   if (locationContainer != null) {
     locationContainer.innerHTML = '';
   }
+  if (weatherContainer != null) {
+    weatherContainer.innerHTML = '';
+  }
+
+  if (forecastContainer != null) {
+    forecastContainer.innerHTML = '';
+  }
 
   const location = input.value;
   input.value = '';
@@ -79,6 +86,10 @@ async function onSearch() {
 
           if (locationContainer != null) {
             locationContainer.innerHTML = '';
+          }
+
+          if (forecastContainer != null) {
+            forecastContainer.innerHTML = '';
           }
 
           console.log('pobieram pogode dla: ', listItemName);
