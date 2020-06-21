@@ -37,50 +37,53 @@ async function onSearch() {
   } else {
     const locationData = await searchLocation(location);
     console.log('list', locationData);
+    if (locationData.count == 0) {
+      alert(`Brak wyników`);
+    } else if (locationData.cod == '404') {
+      alert(`Nie znaleziono prognozy dla ${location}`);
+    } else if (locationData.cod == '400') {
+      alert(`Niewłaściwe żądanie`);
+    } else {
+      locationData.list.forEach((element: any) => {
+        console.log('element', element);
 
-    locationData.list.forEach((element: any) => {
-      console.log('element', element);
+        const listItem = document.createElement('div');
+        listItem.classList.add('list_item');
+        locationContainer?.append(listItem);
 
-      const listItem = document.createElement('div');
-      listItem.classList.add('list_item');
-      locationContainer?.append(listItem);
+        const listItemId = element.id;
+        const listItemName = element.name;
+        const icon = element.weather[0].icon;
 
-      const listItemId = element.id;
-      const listItemName = element.name;
-      const icon = element.weather[0].icon;
+        const locationText = document.createElement('span');
+        locationText.classList.add('location_text');
+        locationText.innerHTML = `${listItemName}`;
+        listItem.append(locationText);
 
-      const locationText = document.createElement('span');
-      locationText.classList.add('location_text');
-      locationText.innerHTML = `${listItemName}`;
-      listItem.append(locationText);
+        const cordLink = document.createElement('a');
+        cordLink.classList.add('cord_link');
+        cordLink.textContent = `[${element.coord.lat},${element.coord.lon}]`;
+        cordLink.href = `https://www.google.com/maps/search/${element.coord.lat},${element.coord.lon}`;
+        cordLink.target = '_blank';
+        listItem?.append(cordLink);
 
-      const cordLink = document.createElement('a');
-      cordLink.classList.add('cord_link');
-      cordLink.textContent = `[${element.coord.lat},${element.coord.lon}]`;
-      cordLink.href = `https://www.google.com/maps/search/${element.coord.lat},${element.coord.lon}`;
-      cordLink.target = '_blank';
-      listItem?.append(cordLink);
+        const locationButton = document.createElement('button');
+        locationButton.classList.add('button_id');
+        locationButton.innerHTML = 'Pokaż prognozę';
+        listItem?.append(locationButton);
 
-      const locationButton = document.createElement('button');
-      locationButton.classList.add('button_id');
-      locationButton.innerHTML = 'Pokaż prognozę';
-      listItem?.append(locationButton);
+        locationButton.addEventListener('click', async () => {
+          if (weatherContainer != null) {
+            weatherContainer.innerHTML = '';
+          }
 
-      locationButton.addEventListener('click', async () => {
-        if (weatherContainer != null) {
-          weatherContainer.innerHTML = '';
-        }
+          if (locationContainer != null) {
+            locationContainer.innerHTML = '';
+          }
 
-        if (locationContainer != null) {
-          locationContainer.innerHTML = '';
-        }
+          console.log('pobieram pogode dla: ', listItemName);
+          const weatherData = await getWeatherDataFromId(listItemId);
 
-        console.log('pobieram pogode dla: ', listItemName);
-        const weatherData = await getWeatherDataFromId(listItemId);
-
-        if (weatherData.cod == '404') {
-          alert(`Nie znaleziono prognozy dla ${listItemName}`);
-        } else {
           const locationElement = document.createElement('div');
           locationElement.id = 'weather_elements';
           weatherContainer?.append(locationElement);
@@ -90,20 +93,21 @@ async function onSearch() {
           weatherContainer?.append(locationElementIcon);
           appendIcon(locationElementIcon, icon);
           console.log(icon);
-        }
-        console.log('weather', weatherData);
 
-        const weatherForecast = await getForecast(listItemId);
-        console.log('forecast', weatherForecast);
+          console.log('weather', weatherData);
 
-        const forecastItems = document.createElement('div');
-        forecastItems.id = 'forecast_text';
-        forecastItems.innerHTML = 'Prognoza na najbliższe dni';
-        forecastContainer?.append(forecastItems);
+          const weatherForecast = await getForecast(listItemId);
+          console.log('forecast', weatherForecast);
 
-        appendForecastData(forecastItems, weatherForecast);
+          const forecastItems = document.createElement('div');
+          forecastItems.id = 'forecast_text';
+          forecastItems.innerHTML = 'Prognoza na najbliższe dni';
+          forecastContainer?.append(forecastItems);
+
+          appendForecastData(forecastItems, weatherForecast);
+        });
       });
-    });
+    }
   }
 }
 
