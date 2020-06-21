@@ -3,6 +3,12 @@
   <head>
     <title>Pogoda</title>
     <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Weather web site with OpenWeatherMap API"
+    />
+    <meta name="keywords" content="OpenWeatherMap, Weather, Forecast" />
+    <meta name="author" content="Karol Śledź" />
     <link rel="icon" href="img/cloud.png" />
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,8 +16,10 @@
   <body>
     <div id="app"></div>
     <h1>Pogoda dla wybranej lokalizacji</h1>
-
-    <input id="location" />
+    <label>
+      <p>Wyszukaj miejscowość</p>
+      <input id="location" />
+    </label>
     <button id="butonek">Szukaj</button>
 
     <div id="location_list"></div>
