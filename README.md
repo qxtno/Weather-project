@@ -1,6 +1,6 @@
-# project
+# Weather-project
 
-Empty project.
+Simple weather app made using OpenWeatherMap API.
 
 ## Building and running on localhost
 
